@@ -58,7 +58,7 @@ dnl set up gettext
 dnl the version check needs to stay here because autopoint greps for it
 AM_GNU_GETTEXT_VERSION([0.17])
 AM_GNU_GETTEXT([external])
-AG_GST_GETTEXT([gstreamer-$GST_API_VERSION])
+AG_GST_GETTEXT([gst-tutorial-$GST_API_VERSION])
 
 dnl *** check for arguments to configure ***
 
@@ -240,6 +240,8 @@ AC_CONFIG_FILES([
 Makefile
 common/Makefile
 common/m4/Makefile
+src_c/Makefile
+po/Makefile.in
 ])
 AC_OUTPUT
 
@@ -250,5 +252,5 @@ VERSIONSource code location      : ${srcdir}
 srcdirPrefix                     : ${prefix}
 prefixCompiler                   : ${CC}
 
-gst-qa configured. Type 'make' to build.
-")
+gst-tutorial configured. Type 'make' to build.
+"
