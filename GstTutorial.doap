@@ -1,0 +1,15 @@
+<Project
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns="http://usefulinc.com/ns/doap#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:admin="http://webns.net/mvcb/">
+ <name>GstTutorial</name>
+ <shortname>gsttutorial</shortname>
+ <shortdesc xml:lang="en">
+  GstTutorial has a bunch of projects for studying gstreamer.
+ </shortdesc>
+ <description xml:lang="en">
+  GstTutorial has a bunch of projects for studying gstreamer.
+ </description>
+</Project>
