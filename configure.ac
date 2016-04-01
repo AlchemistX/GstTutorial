@@ -242,6 +242,7 @@ common/Makefile
 common/m4/Makefile
 src_c/Makefile
 src_c/01.HelloWorld/Makefile
+src_c/02.GStreamerConcepts/Makefile
 po/Makefile.in
 ])
 AC_OUTPUT
