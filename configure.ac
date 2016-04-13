@@ -246,6 +246,8 @@ src_c/02.GStreamerConcepts/Makefile
 src_c/03.TestElement/Makefile
 tests/Makefile
 tests/check/Makefile
+tests/examples/Makefile
+tests/examples/fakeadec/Makefile
 po/Makefile.in
 ])
 AC_OUTPUT
