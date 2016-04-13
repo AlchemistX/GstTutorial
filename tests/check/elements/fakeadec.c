@@ -38,6 +38,44 @@ GST_START_TEST (test_fakeadec_create)
 
 GST_END_TEST;
 
+GST_START_TEST (test_fakeadec_input_output_caps)
+{
+  GstElement *dec;
+  GstPad *sinkpad, *srcpad;
+  GstCaps *caps1;
+  GstCaps *tmp_caps;
+
+  dec = gst_element_factory_make ("fakeadec", NULL);
+  fail_unless (dec != NULL, "failed to create fakeadec element");
+
+  sinkpad = gst_element_get_static_pad (dec, "sink");
+  fail_unless (dec != NULL, "failed to get sinkpad");
+
+  tmp_caps = gst_pad_get_pad_template_caps (sinkpad);
+  fail_unless (!gst_caps_is_any (tmp_caps), "sinkpad caps is any");
+  caps1 = gst_caps_from_string ("audio/mpeg");
+  fail_unless (gst_caps_can_intersect (tmp_caps, caps1),
+      "sinkpad can not accept 'audio/mpeg'");
+  gst_caps_unref (caps1);
+  gst_caps_unref (tmp_caps);
+  gst_object_unref (sinkpad);
+
+  srcpad = gst_element_get_static_pad (dec, "src");
+  fail_unless (dec != NULL, "failed to get srcpad");
+
+  tmp_caps = gst_pad_get_pad_template_caps (srcpad);
+  caps1 = gst_caps_from_string ("audio/x-raw");
+  fail_unless (gst_caps_is_equal (tmp_caps, caps1),
+      "sinkpad can not accept 'audio/mpeg'");
+  gst_caps_unref (caps1);
+  gst_caps_unref (tmp_caps);
+  gst_object_unref (srcpad);
+
+  gst_object_unref (dec);
+}
+
+GST_END_TEST;
+
 static Suite *
 fakeadec_suite (void)
 {
@@ -46,6 +84,7 @@ fakeadec_suite (void)
 
   tc_chain = tcase_create ("fakeadec simple");
   tcase_add_test (tc_chain, test_fakeadec_create);
+  tcase_add_test (tc_chain, test_fakeadec_input_output_caps);
   suite_add_tcase (s, tc_chain);
 
   return s;

@@ -23,18 +23,19 @@
 #endif
 
 #include "gstfakeadec.h"
+#include "gstfdcaps.h"
 
 static GstStaticPadTemplate gst_fakeadec_sink_pad_template =
 GST_STATIC_PAD_TEMPLATE ("sink",
     GST_PAD_SINK,
     GST_PAD_ALWAYS,
-    GST_STATIC_CAPS_ANY);
+    GST_STATIC_CAPS (FD_AUDIO_CAPS));
 
 static GstStaticPadTemplate gst_fakeadec_src_pad_template =
 GST_STATIC_PAD_TEMPLATE ("src",
     GST_PAD_SRC,
     GST_PAD_ALWAYS,
-    GST_STATIC_CAPS_ANY);
+    GST_STATIC_CAPS ("audio/x-raw"));
 
 GST_DEBUG_CATEGORY_STATIC (fakeadec_debug);
 #define GST_CAT_DEFAULT fakeadec_debug
