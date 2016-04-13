@@ -2,6 +2,7 @@ DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 
 SUBDIRS = \
 					src_c \
+					tests \
 					po
 
 DIST_SUBDIRS = $(SUBDIRS)
