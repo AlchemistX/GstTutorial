@@ -40,6 +40,9 @@ GST_STATIC_PAD_TEMPLATE ("src",
 GST_DEBUG_CATEGORY_STATIC (fakeadec_debug);
 #define GST_CAT_DEFAULT fakeadec_debug
 
+static GstFlowReturn gst_fakeadec_chain (GstPad * pad, GstObject * parent,
+    GstBuffer * buffer);
+
 #define gst_fakeadec_parent_class parent_class
 G_DEFINE_TYPE (GstFakeAdec, gst_fakeadec, GST_TYPE_ELEMENT);
 
@@ -66,9 +69,29 @@ gst_fakeadec_init (GstFakeAdec * fakeadec)
   fakeadec->sinkpad =
       gst_pad_new_from_static_template (&gst_fakeadec_sink_pad_template,
       "sink");
+  gst_pad_set_chain_function (fakeadec->sinkpad,
+      GST_DEBUG_FUNCPTR (gst_fakeadec_chain));
   gst_element_add_pad (GST_ELEMENT (fakeadec), fakeadec->sinkpad);
 
   fakeadec->srcpad =
       gst_pad_new_from_static_template (&gst_fakeadec_src_pad_template, "src");
   gst_element_add_pad (GST_ELEMENT (fakeadec), fakeadec->srcpad);
+}
+
+static GstFlowReturn
+gst_fakeadec_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
+{
+  GstFakeAdec *fakeadec;
+  GstFlowReturn ret = GST_FLOW_OK;
+
+  fakeadec = GST_FAKEADEC (parent);
+
+  GST_LOG_OBJECT (pad, "got buffer %" GST_PTR_FORMAT, buffer);
+
+  buffer = gst_buffer_make_writable (buffer);
+  GST_BUFFER_FLAG_SET (buffer, GST_BUFFER_FLAG_CORRUPTED);
+
+  ret = gst_pad_push (fakeadec->srcpad, buffer);
+
+  return ret;
 }
