@@ -135,6 +135,80 @@ GST_START_TEST (test_fakeadec_buffer)
 
 GST_END_TEST;
 
+static void
+decodebin_pad_added_cb (GstElement * dec, GstPad * pad, gpointer user_data)
+{
+  GstBin *pipe = user_data;
+  GstElement *sink;
+  GstPad *sinkpad;
+
+  sink = gst_element_factory_make ("fakesink", NULL);
+  gst_bin_add (pipe, sink);
+  gst_element_sync_state_with_parent (sink);
+  sinkpad = gst_element_get_static_pad (sink, "sink");
+  gst_pad_link (pad, sinkpad);
+  gst_object_unref (sinkpad);
+
+  // export GST_DEBUG_DUMP_DOT_DIR=/home/hoonheelee/work/dot_graph
+  GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS (GST_BIN (pipe),
+      GST_DEBUG_GRAPH_SHOW_ALL, "complete");
+}
+
+GST_START_TEST (test_fakeadec_negotiation_pipeline)
+{
+  GstStateChangeReturn sret;
+  GstPluginFeature *feature;
+  GstMessage *msg;
+  GstCaps *caps;
+  GstElement *pipe, *src, *filter, *dec;
+
+  pipe = gst_pipeline_new (NULL);
+
+  feature = gst_registry_find_feature (gst_registry_get (),
+      "fakeadec", GST_TYPE_ELEMENT_FACTORY);
+
+  gst_plugin_feature_set_rank (feature, GST_RANK_PRIMARY + 100);
+
+  src = gst_element_factory_make ("fakesrc", NULL);
+  fail_unless (src != NULL);
+  g_object_set (G_OBJECT (src), "num-buffers", 5, "sizetype", 2, "filltype", 2,
+      "can-activate-pull", FALSE, NULL);
+
+  filter = gst_element_factory_make ("capsfilter", NULL);
+  fail_unless (filter != NULL);
+  caps = gst_caps_from_string ("audio/mpeg");
+  g_object_set (G_OBJECT (filter), "caps", caps, NULL);
+  gst_caps_unref (caps);
+
+  dec = gst_element_factory_make ("decodebin", NULL);
+  fail_unless (dec != NULL);
+
+  g_signal_connect (dec, "pad-added",
+      G_CALLBACK (decodebin_pad_added_cb), pipe);
+
+  gst_bin_add_many (GST_BIN (pipe), src, filter, dec, NULL);
+  gst_element_link_many (src, filter, dec, NULL);
+
+  sret = gst_element_set_state (pipe, GST_STATE_PLAYING);
+  fail_unless_equals_int (sret, GST_STATE_CHANGE_ASYNC);
+
+  /* wait for EOS or error */
+  msg = gst_bus_timed_pop_filtered (GST_ELEMENT_BUS (pipe),
+      GST_CLOCK_TIME_NONE, GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
+  fail_unless (msg != NULL);
+  fail_unless (GST_MESSAGE_TYPE (msg) == GST_MESSAGE_EOS);
+  gst_message_unref (msg);
+
+  gst_element_set_state (pipe, GST_STATE_NULL);
+  gst_object_unref (pipe);
+
+  /* don't want to interfere with any other of the other tests */
+  gst_plugin_feature_set_rank (feature, GST_RANK_NONE);
+  gst_object_unref (feature);
+}
+
+GST_END_TEST;
+
 static Suite *
 fakeadec_suite (void)
 {
@@ -145,6 +219,7 @@ fakeadec_suite (void)
   tcase_add_test (tc_chain, test_fakeadec_create);
   tcase_add_test (tc_chain, test_fakeadec_input_output_caps);
   tcase_add_test (tc_chain, test_fakeadec_buffer);
+  tcase_add_test (tc_chain, test_fakeadec_negotiation_pipeline);
   suite_add_tcase (s, tc_chain);
 
   return s;
