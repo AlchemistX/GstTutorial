@@ -68,7 +68,6 @@ class GTK_Main(object):
         dlg = Gtk.FileChooserDialog(action=Gtk.FileChooserAction.OPEN)
         dlg.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
         dlg.add_buttons(Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
-        dlg.set_current_folder("/share/DLNA/TestMedia")
         res = dlg.run()
         if res == Gtk.ResponseType.OK:
             self.entry.set_text(dlg.get_filename())
