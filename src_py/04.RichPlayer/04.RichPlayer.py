@@ -26,7 +26,8 @@ class GTK_Main(object):
 
         self.slider = Gtk.HScale.new_with_range(0, 100, 1)
         self.slider.set_draw_value(0);
-        self.slider_update_sig_id = self.slider.connect("value-changed", self.on_slider, None)
+        self.slider_update_sig_id = self.slider.connect("value-changed",
+                                                        self.on_slider, None)
 
         self.streams_list = Gtk.TextView()
         self.streams_list.set_editable(False);
@@ -56,7 +57,8 @@ class GTK_Main(object):
         self.tag_str = ""
         self.uri = ""
         self.player = Gst.ElementFactory.make("playbin", "player")
-        #self.player.set_property("uri", "http://docs.gstreamer.com/media/sintel_trailer-480p.webm");
+        #self.player.set_property("uri",
+        #            "http://docs.gstreamer.com/media/sintel_trailer-480p.webm")
         self.player.connect("video-tags-changed", self.on_tags)
         self.player.connect("audio-tags-changed", self.on_tags)
         self.player.connect("text-tags-changed", self.on_tags)
@@ -130,7 +132,8 @@ class GTK_Main(object):
         if message.get_structure().get_name() == 'prepare-window-handle':
             imagesink = message.src
             imagesink.set_property("force-aspect-ratio", True)
-            imagesink.set_window_handle(self.video_window.get_property('window').get_xid())
+            imagesink.set_window_handle(
+                            self.video_window.get_property('window').get_xid())
 
     def on_error(self, bus, message):
         err, debug = message.parse_error()
@@ -149,9 +152,11 @@ class GTK_Main(object):
             if old_state == Gst.State.READY and new_state == Gst.State.PAUSED:
                 self.on_refresh_ui(None)
             elif new_state == Gst.State.PLAYING:
-                print(self.tag_str)
-                txt = self.streams_list.get_buffer()
-                txt.set_text(self.tag_str)
+                if self.tag_str != "":
+                    print(self.tag_str)
+                    txt = self.streams_list.get_buffer()
+                    txt.set_text(self.tag_str)
+                    self.tag_str = ""
 
     def on_application(self, bus, message):
         if message.get_structure().get_name() == 'tags-changed':
@@ -180,7 +185,9 @@ class GTK_Main(object):
 
     def on_slider(self, obj, data):
         val = self.slider.get_value()
-        self.player.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, val*Gst.SECOND)
+        self.player.seek_simple(Gst.Format.TIME,
+                                Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT,
+                                val*Gst.SECOND)
 
     def on_refresh_ui(self, data):
         if self.state < Gst.State.PAUSED :
@@ -195,9 +202,11 @@ class GTK_Main(object):
 
         ret, pos = self.player.query_position(Gst.Format.TIME)
         if ret:
-            GObject.signal_handler_block(self.slider, self.slider_update_sig_id)
+            GObject.signal_handler_block(self.slider,
+                                         self.slider_update_sig_id)
             self.slider.set_value(pos/Gst.SECOND)
-            GObject.signal_handler_unblock(self.slider, self.slider_update_sig_id)
+            GObject.signal_handler_unblock(self.slider,
+                                           self.slider_update_sig_id)
 
         return True
 
