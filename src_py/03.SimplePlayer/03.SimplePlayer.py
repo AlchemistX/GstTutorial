@@ -6,7 +6,8 @@ gi.require_version('Gst', '1.0')
 gi.require_version('Gtk', '3.0')
 gi.require_version('GstVideo', '1.0')
 from gi.repository import Gst, Gtk
-from gi.repository import GdkX11, GstVideo
+#from gi.repository import GdkX11, GstVideo
+from gi.repository import GstVideo
 
 class GTK_Main(object):
     def __init__(self):

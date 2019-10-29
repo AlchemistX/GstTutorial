@@ -9,7 +9,7 @@ def main(argv):
 
     #Create the elements
     source = Gst.ElementFactory.make ("videotestsrc", "source");
-    sink = Gst.ElementFactory.make ("autovideosink", "sink");
+    sink = Gst.ElementFactory.make ("osxvideosink", "sink");
 
     # Create the empty pipeline
     pipeline = Gst.Pipeline.new ("test-pipeline");
@@ -28,6 +28,7 @@ def main(argv):
     # Modify the source's properties
     source.set_property("pattern", 0)
 
+
     # Start playing
     if pipeline.set_state(Gst.State.PLAYING) == Gst.StateChangeReturn.FAILURE :
         print("Unable to set the pipeline to the playing state.\n")
@@ -38,6 +39,7 @@ def main(argv):
     msg = bus.timed_pop_filtered (Gst.CLOCK_TIME_NONE,
                                   Gst.MessageType.ERROR |
                                   Gst.MessageType.EOS)
+
     # Parse message
     if msg :
         if msg.type == Gst.MessageType.ERROR:
